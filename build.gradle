@@ -11,6 +11,7 @@ buildscript {
         compose_constraint_layout_version = "1.0.0"
 //        coil_version = "1.4.0"
         coil_version = "2.0.0-rc01"
+        room_version = "2.4.2"
     }
     repositories {
         google()
