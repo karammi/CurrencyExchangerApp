@@ -35,9 +35,9 @@ object NetworkModule {
     @Singleton
     fun provideOkHttpClient(loggingInterceptor: HttpLoggingInterceptor): OkHttpClient {
         return OkHttpClient.Builder()
-            .readTimeout(60, TimeUnit.SECONDS)
-            .writeTimeout(60, TimeUnit.SECONDS)
-            .connectTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(15, TimeUnit.SECONDS)
+            .writeTimeout(15, TimeUnit.SECONDS)
+            .connectTimeout(15, TimeUnit.SECONDS)
             .addInterceptor(loggingInterceptor)
             .build()
     }
@@ -54,11 +54,11 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(
         baseUrl: String,
-        okHttpClient: OkHttpClient,
+        client: OkHttpClient,
         moshiConverterFactory: MoshiConverterFactory,
     ): Retrofit {
         return Retrofit.Builder()
-            .client(okHttpClient)
+            .client(client)
             .baseUrl(baseUrl)
             .addConverterFactory(moshiConverterFactory)
             .build()
