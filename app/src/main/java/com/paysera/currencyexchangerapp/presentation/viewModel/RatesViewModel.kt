@@ -74,22 +74,7 @@ class RatesViewModel @Inject constructor(
                     receiveSelectedRate.emit(receiveSelectedRate.value.copy(second = it.toString()))
                 }
         }
-
-        /*      viewModelScope.launch(ioDispatcher) {
-                  sellSelectedRate.zip(
-                      buySelectedRate
-                  ) { sell: Pair<String, Double>, buy: Pair<String, Double> ->
-                      if (sell.second != 0.0)
-                          buySelectedRate.emit(
-                              buySelectedRate.value.copy(
-                                  second = currencies.value?.get(buy.first)!! * sell.second
-                              )
-                          )
-                  }
-              }*/
     }
-
-    // "USD":1.095662,
 
     fun toggleSellSheet() {
         showSellSheet.value = !showSellSheet.value
