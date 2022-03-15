@@ -52,9 +52,9 @@ class RatesViewModel @Inject constructor(
                         0.00
                 } as LinkedHashMap<String, Double>?
 
-                if (_myBalances.value?.entries?.size == 1) {
-                    setSellSelectedRate(_myBalances.value?.keys?.first().toString())
-                }
+//                if (_myBalances.value?.entries?.size == 1) {
+//                    setSellSelectedRate(_myBalances.value?.keys?.first().toString())
+//                }
             }
         }
         viewModelScope.launch(ioDispatcher) {

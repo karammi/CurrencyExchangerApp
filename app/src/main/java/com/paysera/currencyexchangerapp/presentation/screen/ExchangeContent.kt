@@ -37,13 +37,6 @@ fun CurrencyExchangeContentSection(viewModel: RatesViewModel) {
     val rates = balancesState.value?.keys?.toList()
     val ratesBuy = viewModel.currencies.value?.keys?.toList()
 
-    val sellState = remember {
-        mutableStateOf("")
-    }
-    val buyState = remember {
-        mutableStateOf("")
-    }
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
