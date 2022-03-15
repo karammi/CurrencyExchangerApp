@@ -11,7 +11,6 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -61,12 +60,11 @@ fun CurrencyExchangeContentSection(viewModel: RatesViewModel) {
             onUnitClick = {
                 viewModel.toggleSellSheet()
             },
-            textInputValue = sellRateState.value.second.toString(),
+            textInputValue = sellRateState.value.second,
 //            textInputValue = sellState.value,
             onValueChanged = {
 //                sellState.value = it
-                if (it.isNotBlank())
-                    viewModel.setSellValue(it.toDouble())
+                viewModel.setSellValue(it)
             }
         )
 
@@ -77,9 +75,9 @@ fun CurrencyExchangeContentSection(viewModel: RatesViewModel) {
             onUnitClick = {
                 viewModel.toggleReceiveSheet()
             },
-            textInputValue = receiveRateState.value.second.toString(),
+            textInputValue = receiveRateState.value.second,
             onValueChanged = {
-                viewModel.setReceiveValue(it.toDouble())
+                viewModel.setReceiveValue(it)
             }
         )
 

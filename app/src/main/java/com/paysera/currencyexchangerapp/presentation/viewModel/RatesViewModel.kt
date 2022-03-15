@@ -26,8 +26,8 @@ class RatesViewModel @Inject constructor(
 
     val rates = MutableStateFlow<List<String>?>(null)
 
-    val sellSelectedRate = MutableStateFlow(Pair<String?, Double>(null, 0.0))
-    val receiveSelectedRate = MutableStateFlow(Pair<String?, Double>(null, 0.0))
+    val sellSelectedRate = MutableStateFlow(Pair<String?, String>(null, ""))
+    val receiveSelectedRate = MutableStateFlow(Pair<String?, String>(null, ""))
 
     var showSellSheet = mutableStateOf(false)
         private set
@@ -68,7 +68,7 @@ class RatesViewModel @Inject constructor(
         viewModelScope.launch(ioDispatcher) {
             combineTransform(sellSelectedRate, receiveSelectedRate, _rates) { sell, buy, rates ->
 
-                if (rates == null || sell.first.isNullOrEmpty() || buy.first.isNullOrEmpty()) {
+                if (rates == null || sell.first.isNullOrEmpty() || buy.first.isNullOrEmpty() || sell.second.isNullOrEmpty()) {
                     emit((-1).toDouble())
                 } else {
                     val rate: Double = rates.rates[buy.first]!!
@@ -79,7 +79,7 @@ class RatesViewModel @Inject constructor(
                 .filter {
                     it != (-1).toDouble()
                 }.collectLatest {
-                    receiveSelectedRate.emit(receiveSelectedRate.value.copy(second = it))
+                    receiveSelectedRate.emit(receiveSelectedRate.value.copy(second = it.toString()))
                 }
         }
 
@@ -123,17 +123,17 @@ class RatesViewModel @Inject constructor(
         }
     }
 
-    fun setSellValue(amount: Double) {
-        viewModelScope.launch(ioDispatcher) {
-//            sellSelectedRate.emit(sellSelectedRate.value.copy(second = amount.toDouble()))
+    fun setSellValue(amount: String) {
+        viewModelScope.launch {
+//            sellSelectedRate.emit(sellSelectedRate.value.copy(second = amount))
             sellSelectedRate.update {
                 it.copy(second = amount)
             }
         }
     }
 
-    fun setReceiveValue(amount: Double) {
-        viewModelScope.launch(ioDispatcher) {
+    fun setReceiveValue(amount: String) {
+        viewModelScope.launch {
             receiveSelectedRate.update {
                 it.copy(second = amount)
             }
