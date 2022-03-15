@@ -45,9 +45,6 @@ class RatesViewModel @Inject constructor(
 
         viewModelScope.launch(ioDispatcher) {
             _rates.collect { currentCurrency ->
-//                _myBalances.value =
-//                    currentCurrency?.rates?.toMutableMap() as LinkedHashMap<String, Double>?
-
                 _myBalances.value = currentCurrency?.rates?.mapValues {
                     if (it.key == _rates.value?.base)
                         1000.00
