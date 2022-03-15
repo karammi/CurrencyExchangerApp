@@ -52,11 +52,6 @@ class RatesViewModel @Inject constructor(
                         0.00
                 } as LinkedHashMap<String, Double>?
 
-//                _myBalances.value?.entries?.apply {
-//                    this.removeIf {
-//                        it.value == 0.00
-//                    }
-//                }
                 if (_myBalances.value?.entries?.size == 1) {
                     setSellSelectedRate(_myBalances.value?.keys?.first().toString())
                 }
