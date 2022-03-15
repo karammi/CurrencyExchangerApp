@@ -26,7 +26,9 @@ fun MyBalanceContent(viewModel: RatesViewModel) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
     ) {
-        balances.value?.entries?.forEach { currentMap ->
+        balances.value?.entries?.sortedByDescending {
+            it.value
+        }?.forEach { currentMap ->
             item(
                 key = currentMap.key
             ) {

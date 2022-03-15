@@ -9,10 +9,14 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
+import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -29,11 +33,17 @@ import com.paysera.currencyexchangerapp.presentation.viewModel.RatesViewModel
 fun CurrencyExchangeContentSection(viewModel: RatesViewModel) {
 
     val sellRateState = viewModel.sellSelectedRate.collectAsState()
-    val buySelectedRate = viewModel.buySelectedRate.collectAsState()
-
+    val receiveRateState = viewModel.receiveSelectedRate.collectAsState()
     val balancesState = viewModel.myBalancesSell.collectAsState()
     val rates = balancesState.value?.keys?.toList()
     val ratesBuy = viewModel.currencies.value?.keys?.toList()
+
+    val sellState = remember {
+        mutableStateOf("")
+    }
+    val buyState = remember {
+        mutableStateOf("")
+    }
 
     Column(
         modifier = Modifier
@@ -41,27 +51,35 @@ fun CurrencyExchangeContentSection(viewModel: RatesViewModel) {
             .wrapContentHeight()
             .padding(16.dp)
     ) {
+
         Text(text = "CURRENCY EXCHANGE")
+
+        Spacer(modifier = Modifier.height(8.dp))
+
         SellContentRow(
-            unitTitle = sellRateState.value.first,
+            unitTitle = sellRateState.value.first ?: "",
             onUnitClick = {
                 viewModel.toggleSellSheet()
             },
             textInputValue = sellRateState.value.second.toString(),
+//            textInputValue = sellState.value,
             onValueChanged = {
-                viewModel.setSellValue(it.toDouble())
+//                sellState.value = it
+                if (it.isNotBlank())
+                    viewModel.setSellValue(it.toDouble())
             }
         )
+
         Divider(modifier = Modifier.height(1.dp))
 
-        BuyContentRow(
-            unitTitle = buySelectedRate.value.first,
+        ReceiveContentRow(
+            unitTitle = receiveRateState.value.first ?: "",
             onUnitClick = {
-                viewModel.toggleBuySheet()
+                viewModel.toggleReceiveSheet()
             },
-            textInputValue = buySelectedRate.value.second.toString(),
+            textInputValue = receiveRateState.value.second.toString(),
             onValueChanged = {
-                viewModel.setBuyValue(it.toDouble())
+                viewModel.setReceiveValue(it.toDouble())
             }
         )
 
@@ -81,11 +99,11 @@ fun CurrencyExchangeContentSection(viewModel: RatesViewModel) {
             RateBottomSheet(
                 initialValue = ratesBuy,
                 isVisible = viewModel.showBuySheet.value,
-                onOutsidePressed = { viewModel.toggleBuySheet() },
+                onOutsidePressed = { viewModel.toggleReceiveSheet() },
                 isLoading = false,
                 onItemClick = {
-                    viewModel.setBuySelectedRate(it)
-                    viewModel.toggleBuySheet()
+                    viewModel.setReceiveSelectedRate(it)
+                    viewModel.toggleReceiveSheet()
                 }
             )
         }
@@ -101,7 +119,6 @@ fun SellContentRow(
 ) {
     Card(
         modifier = Modifier
-            .padding(8.dp)
             .shadow(8.dp, RoundedCornerShape(6.dp)),
     ) {
         Row(
@@ -112,7 +129,7 @@ fun SellContentRow(
         ) {
             Spacer(modifier = Modifier.width(8.dp))
             Icon(
-                imageVector = Icons.Filled.ArrowDropUp,
+                imageVector = Icons.Filled.ArrowUpward,
                 contentDescription = unitTitle,
                 modifier = Modifier
                     .shadow(1.dp, CircleShape)
@@ -169,7 +186,7 @@ fun SellContentRow(
 }
 
 @Composable
-fun BuyContentRow(
+fun ReceiveContentRow(
     unitTitle: String,
     onUnitClick: (String) -> Unit,
     textInputValue: String,
@@ -177,7 +194,6 @@ fun BuyContentRow(
 ) {
     Card(
         modifier = Modifier
-            .padding(8.dp)
             .shadow(8.dp, RoundedCornerShape(6.dp)),
     ) {
         Row(
@@ -188,15 +204,15 @@ fun BuyContentRow(
         ) {
             Spacer(modifier = Modifier.width(8.dp))
             Icon(
-                imageVector = Icons.Filled.ArrowDropUp,
-                contentDescription = "sell",
+                imageVector = Icons.Filled.ArrowDownward,
+                contentDescription = "Receive",
                 modifier = Modifier
                     .shadow(1.dp, CircleShape)
                     .background(Color.Green)
                     .size(24.dp),
             )
             Spacer(modifier = Modifier.width(8.dp))
-            Text(text = "Sell")
+            Text(text = "Receive")
             Spacer(modifier = Modifier.width(8.dp))
             TextField(
                 value = textInputValue,

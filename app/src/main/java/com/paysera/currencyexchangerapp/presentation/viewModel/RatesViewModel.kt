@@ -8,10 +8,7 @@ import com.paysera.currencyexchangerapp.domain.entity.Rates
 import com.paysera.currencyexchangerapp.domain.usecase.FetchRatesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.flow.zip
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,8 +26,8 @@ class RatesViewModel @Inject constructor(
 
     val rates = MutableStateFlow<List<String>?>(null)
 
-    val sellSelectedRate = MutableStateFlow(Pair("Unit", 0.0))
-    val buySelectedRate = MutableStateFlow(Pair("Unit", 0.0))
+    val sellSelectedRate = MutableStateFlow(Pair<String?, Double>(null, 0.0))
+    val receiveSelectedRate = MutableStateFlow(Pair<String?, Double>(null, 0.0))
 
     var showSellSheet = mutableStateOf(false)
         private set
@@ -48,38 +45,56 @@ class RatesViewModel @Inject constructor(
 
         viewModelScope.launch(ioDispatcher) {
             _rates.collect { currentCurrency ->
-                _myBalances.value =
-                    currentCurrency?.rates?.toMutableMap() as LinkedHashMap<String, Double>?
+//                _myBalances.value =
+//                    currentCurrency?.rates?.toMutableMap() as LinkedHashMap<String, Double>?
 
-                _myBalances.value?.entries?.forEach {
-                    if (it.key == "EUR")
-                        it.setValue(1000.00)
+                _myBalances.value = currentCurrency?.rates?.mapValues {
+                    if (it.key == _rates.value?.base)
+                        1000.00
                     else
-                        it.setValue(0.00)
-                }
-                _myBalances.value?.entries?.apply {
-                    this.removeIf {
-                        it.value == 0.00
-                    }
-                }
+                        0.00
+                } as LinkedHashMap<String, Double>?
+
+//                _myBalances.value?.entries?.apply {
+//                    this.removeIf {
+//                        it.value == 0.00
+//                    }
+//                }
                 if (_myBalances.value?.entries?.size == 1) {
                     setSellSelectedRate(_myBalances.value?.keys?.first().toString())
                 }
             }
         }
-
         viewModelScope.launch(ioDispatcher) {
-            sellSelectedRate.zip(
-                buySelectedRate
-            ) { sell: Pair<String, Double>, buy: Pair<String, Double> ->
-                if (sell.second != 0.0)
-                    buySelectedRate.emit(
-                        buySelectedRate.value.copy(
-                            second = currencies.value?.get(buy.first)!! * sell.second
-                        )
-                    )
-            }
+            combineTransform(sellSelectedRate, receiveSelectedRate, _rates) { sell, buy, rates ->
+
+                if (rates == null || sell.first.isNullOrEmpty() || buy.first.isNullOrEmpty()) {
+                    emit((-1).toDouble())
+                } else {
+                    val rate: Double = rates.rates[buy.first]!!
+                    emit(sell.second.toDouble() * rate)
+//                    emit(currencies.value?.get(sell.first)?.times(buy.second) ?: (-1).toDouble())
+                }
+            }.filterNotNull()
+                .filter {
+                    it != (-1).toDouble()
+                }.collectLatest {
+                    receiveSelectedRate.emit(receiveSelectedRate.value.copy(second = it))
+                }
         }
+
+        /*      viewModelScope.launch(ioDispatcher) {
+                  sellSelectedRate.zip(
+                      buySelectedRate
+                  ) { sell: Pair<String, Double>, buy: Pair<String, Double> ->
+                      if (sell.second != 0.0)
+                          buySelectedRate.emit(
+                              buySelectedRate.value.copy(
+                                  second = currencies.value?.get(buy.first)!! * sell.second
+                              )
+                          )
+                  }
+              }*/
     }
 
     // "USD":1.095662,
@@ -88,37 +103,38 @@ class RatesViewModel @Inject constructor(
         showSellSheet.value = !showSellSheet.value
     }
 
-    fun toggleBuySheet() {
+    fun toggleReceiveSheet() {
         showBuySheet.value = !showBuySheet.value
     }
 
     fun setSellSelectedRate(selectedRate: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             sellSelectedRate.update {
                 it.copy(first = selectedRate)
             }
         }
     }
 
-    fun setBuySelectedRate(selectedRate: String) {
-        viewModelScope.launch {
-            buySelectedRate.update {
+    fun setReceiveSelectedRate(selectedRate: String) {
+        viewModelScope.launch(ioDispatcher) {
+            receiveSelectedRate.update {
                 it.copy(first = selectedRate)
             }
         }
     }
 
     fun setSellValue(amount: Double) {
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
+//            sellSelectedRate.emit(sellSelectedRate.value.copy(second = amount.toDouble()))
             sellSelectedRate.update {
                 it.copy(second = amount)
             }
         }
     }
 
-    fun setBuyValue(amount: Double) {
-        viewModelScope.launch {
-            buySelectedRate.update {
+    fun setReceiveValue(amount: Double) {
+        viewModelScope.launch(ioDispatcher) {
+            receiveSelectedRate.update {
                 it.copy(second = amount)
             }
         }
