@@ -54,9 +54,7 @@ fun CurrencyExchangeContentSection(viewModel: RatesViewModel) {
                 viewModel.toggleSellSheet()
             },
             textInputValue = sellRateState.value.second,
-//            textInputValue = sellState.value,
             onValueChanged = {
-//                sellState.value = it
                 viewModel.setSellValue(it)
             }
         )

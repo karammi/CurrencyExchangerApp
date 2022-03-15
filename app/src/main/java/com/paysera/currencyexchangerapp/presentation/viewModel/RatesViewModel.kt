@@ -51,10 +51,6 @@ class RatesViewModel @Inject constructor(
                     else
                         0.00
                 } as LinkedHashMap<String, Double>?
-
-//                if (_myBalances.value?.entries?.size == 1) {
-//                    setSellSelectedRate(_myBalances.value?.keys?.first().toString())
-//                }
             }
         }
         viewModelScope.launch(ioDispatcher) {
@@ -65,7 +61,6 @@ class RatesViewModel @Inject constructor(
                 } else {
                     val rate: Double = rates.rates[buy.first]!!
                     emit(sell.second.toDouble() * rate)
-//                    emit(currencies.value?.get(sell.first)?.times(buy.second) ?: (-1).toDouble())
                 }
             }.filterNotNull()
                 .filter {
@@ -102,7 +97,6 @@ class RatesViewModel @Inject constructor(
 
     fun setSellValue(amount: String) {
         viewModelScope.launch {
-//            sellSelectedRate.emit(sellSelectedRate.value.copy(second = amount))
             sellSelectedRate.update {
                 it.copy(second = amount)
             }
