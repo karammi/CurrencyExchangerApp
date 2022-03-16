@@ -14,8 +14,6 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -37,13 +35,6 @@ fun CurrencyExchangeContentSection(viewModel: RatesViewModel) {
     val rates = balancesState.value?.keys?.toList()
     val ratesBuy = viewModel.currencies.value?.keys?.toList()
 
-    val sellState = remember {
-        mutableStateOf("")
-    }
-    val buyState = remember {
-        mutableStateOf("")
-    }
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -51,7 +42,10 @@ fun CurrencyExchangeContentSection(viewModel: RatesViewModel) {
             .padding(16.dp)
     ) {
 
-        Text(text = "CURRENCY EXCHANGE")
+        Text(
+            text = "CURRENCY EXCHANGE",
+            modifier = Modifier.padding(vertical = 8.dp)
+        )
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -61,14 +55,10 @@ fun CurrencyExchangeContentSection(viewModel: RatesViewModel) {
                 viewModel.toggleSellSheet()
             },
             textInputValue = sellRateState.value.second,
-//            textInputValue = sellState.value,
             onValueChanged = {
-//                sellState.value = it
                 viewModel.setSellValue(it)
             }
         )
-
-        Divider(modifier = Modifier.height(1.dp))
 
         ReceiveContentRow(
             unitTitle = receiveRateState.value.first ?: "",
@@ -117,11 +107,13 @@ fun SellContentRow(
 ) {
     Card(
         modifier = Modifier
+            .padding(vertical = 16.dp)
             .shadow(8.dp, RoundedCornerShape(6.dp)),
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -132,7 +124,8 @@ fun SellContentRow(
                 modifier = Modifier
                     .shadow(1.dp, CircleShape)
                     .background(Color.Red)
-                    .size(24.dp),
+                    .padding(2.dp)
+                    .size(24.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(text = "Sell")
@@ -162,7 +155,9 @@ fun SellContentRow(
                 textStyle = TextStyle(textAlign = TextAlign.End)
 
             )
+
             Spacer(modifier = Modifier.width(8.dp))
+
             Row(
                 modifier = Modifier
                     .weight(0.7f)
@@ -192,11 +187,13 @@ fun ReceiveContentRow(
 ) {
     Card(
         modifier = Modifier
+            .padding(vertical = 16.dp)
             .shadow(8.dp, RoundedCornerShape(6.dp)),
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -207,7 +204,8 @@ fun ReceiveContentRow(
                 modifier = Modifier
                     .shadow(1.dp, CircleShape)
                     .background(Color.Green)
-                    .size(24.dp),
+                    .padding(2.dp)
+                    .size(24.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(text = "Receive")
@@ -232,7 +230,12 @@ fun ReceiveContentRow(
                 ),
                 modifier = Modifier
                     .weight(2f),
-                textStyle = TextStyle(textAlign = TextAlign.End)
+                textStyle = TextStyle(
+                    textAlign = TextAlign.End,
+                    color = if (textInputValue.isNotEmpty() && textInputValue.toDouble() > 0.0) Color.Green else Color.Red
+                ),
+                singleLine = true,
+                readOnly = true,
             )
             Spacer(modifier = Modifier.width(8.dp))
             Row(

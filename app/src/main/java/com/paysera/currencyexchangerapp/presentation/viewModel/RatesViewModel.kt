@@ -34,6 +34,9 @@ class RatesViewModel @Inject constructor(
     var showBuySheet = mutableStateOf(false)
         private set
 
+    var transactionCount = mutableStateOf(0)
+        private set
+
     init {
         viewModelScope.launch(ioDispatcher) {
             val response = fetchRatesUseCase.invoke()
@@ -51,10 +54,6 @@ class RatesViewModel @Inject constructor(
                     else
                         0.00
                 } as LinkedHashMap<String, Double>?
-
-                if (_myBalances.value?.entries?.size == 1) {
-                    setSellSelectedRate(_myBalances.value?.keys?.first().toString())
-                }
             }
         }
         viewModelScope.launch(ioDispatcher) {
@@ -64,8 +63,7 @@ class RatesViewModel @Inject constructor(
                     emit((-1).toDouble())
                 } else {
                     val rate: Double = rates.rates[buy.first]!!
-                    emit(sell.second.toDouble() * rate)
-//                    emit(currencies.value?.get(sell.first)?.times(buy.second) ?: (-1).toDouble())
+                    emit(kotlin.math.round((sell.second.toDouble() * rate) * 100) / 100)
                 }
             }.filterNotNull()
                 .filter {
@@ -73,6 +71,71 @@ class RatesViewModel @Inject constructor(
                 }.collectLatest {
                     receiveSelectedRate.emit(receiveSelectedRate.value.copy(second = it.toString()))
                 }
+        }
+    }
+
+    fun submitTransaction() {
+        viewModelScope.launch {
+            combineTransform(
+                sellSelectedRate,
+                receiveSelectedRate,
+                _rates,
+            ) { sell, receive, rates ->
+                emit(Transaction.Loading)
+                if (rates == null || sell.first.isNullOrEmpty() ||
+                    sell.second.isNullOrEmpty() || receive.first.isNullOrEmpty() ||
+                    receive.second.isNullOrEmpty() || sell.second.toDouble() <= 0.0
+                ) {
+                    emit(Transaction.TransactionError)
+                } else {
+
+                    val srcBalanceValue = _myBalances.value!![sell.first]
+                    val desBalanceValue = _myBalances.value!![receive.first]
+                    val srcValue: Double = sell.second.toDouble()
+                    val result = srcBalanceValue!! - srcValue
+
+                    val desValue: Double =
+                        receive.second.toDouble() + kotlin.math.round((desBalanceValue!! * 100) / 100)
+                    emit(
+                        Transaction.Success(
+                            sell = sell.first!! to result,
+                            receive = receive.first!! to (kotlin.math.round(desValue * 100) / 100),
+                            0.0
+                        )
+                    )
+                }
+            }.collectLatest { currentTransaction ->
+                when (currentTransaction) {
+                    Transaction.Destination,
+                    Transaction.Loading,
+                    Transaction.TransactionError,
+                    -> {
+                        println(currentTransaction)
+                    }
+                    is Transaction.Success -> {
+                        println(currentTransaction.sell)
+                        println(currentTransaction.receive)
+                        println(currentTransaction.commissionFee)
+
+                        sellSelectedRate.update {
+                            it.copy(first = null, second = "")
+                        }
+                        receiveSelectedRate.update {
+                            it.copy(first = null, second = "")
+                        }
+                        transactionCount.value = transactionCount.value + 1
+
+                        val temp = _myBalances.value?.mapValues {
+                            when (it.key) {
+                                currentTransaction.sell.first -> currentTransaction.sell.second
+                                currentTransaction.receive.first -> currentTransaction.receive.second
+                                else -> it.value
+                            }
+                        }
+                        _myBalances.emit(temp as LinkedHashMap<String, Double>?)
+                    }
+                }
+            }
         }
     }
 
@@ -102,7 +165,6 @@ class RatesViewModel @Inject constructor(
 
     fun setSellValue(amount: String) {
         viewModelScope.launch {
-//            sellSelectedRate.emit(sellSelectedRate.value.copy(second = amount))
             sellSelectedRate.update {
                 it.copy(second = amount)
             }
@@ -116,4 +178,16 @@ class RatesViewModel @Inject constructor(
             }
         }
     }
+}
+
+sealed class Transaction {
+    object Loading : Transaction()
+    data class Success(
+        val sell: Pair<String, Double>,
+        val receive: Pair<String, Double>,
+        val commissionFee: Double,
+    ) : Transaction()
+
+    object Destination : Transaction()
+    object TransactionError : Transaction()
 }
