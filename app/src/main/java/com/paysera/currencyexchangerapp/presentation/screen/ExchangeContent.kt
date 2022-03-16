@@ -170,7 +170,7 @@ fun SellContentRow(
                 Text(text = unitTitle)
                 Icon(
                     imageVector = Icons.Filled.ArrowDropDown,
-                    contentDescription = "down",
+                    contentDescription = "Sell",
                     modifier = Modifier.size(40.dp)
                 )
             }
@@ -250,7 +250,7 @@ fun ReceiveContentRow(
                 Text(text = unitTitle)
                 Icon(
                     imageVector = Icons.Filled.ArrowDropDown,
-                    contentDescription = "down",
+                    contentDescription = "Receive",
                     modifier = Modifier.size(40.dp)
                 )
             }
