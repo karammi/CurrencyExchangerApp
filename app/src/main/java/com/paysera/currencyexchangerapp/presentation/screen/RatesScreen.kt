@@ -16,10 +16,7 @@ import com.paysera.currencyexchangerapp.presentation.viewModel.RatesViewModel
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun RatesScreen(viewModel: RatesViewModel = hiltViewModel()) {
-    Scaffold(
-        bottomBar = {
-        }
-    ) {
+    Scaffold {
         Column(
             modifier = Modifier
                 .fillMaxSize()

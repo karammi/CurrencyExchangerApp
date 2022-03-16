@@ -120,7 +120,7 @@ class RatesViewModel @Inject constructor(
                     Transaction.TransactionError.UnknownError,
                     Transaction.Loading,
                     -> {
-                        // show error message based on their types
+                        // show error message based on error type on ui screen
                     }
                     is Transaction.Success -> {
                         // reset values
