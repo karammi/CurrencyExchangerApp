@@ -22,6 +22,7 @@ fun MyBalanceContent(viewModel: RatesViewModel) {
     val balances by viewModel.myBalancesSell.collectAsState()
     LazyRow(
         modifier = Modifier
+            .padding(horizontal = 16.dp)
             .fillMaxWidth()
             .height(60.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -63,10 +64,10 @@ fun RateItemContent(
             .clickable {
                 onBalanceClick(priceUnit to balance)
             },
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(text = balance.toString())
-        Spacer(modifier = Modifier.width(8.dp))
         Text(text = priceUnit)
     }
 }

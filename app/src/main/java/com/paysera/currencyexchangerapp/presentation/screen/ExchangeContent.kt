@@ -42,7 +42,10 @@ fun CurrencyExchangeContentSection(viewModel: RatesViewModel) {
             .padding(16.dp)
     ) {
 
-        Text(text = "CURRENCY EXCHANGE")
+        Text(
+            text = "CURRENCY EXCHANGE",
+            modifier = Modifier.padding(vertical = 8.dp)
+        )
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -57,7 +60,10 @@ fun CurrencyExchangeContentSection(viewModel: RatesViewModel) {
             }
         )
 
-        Divider(modifier = Modifier.height(1.dp))
+//        Divider(
+//            modifier = Modifier
+//                .height(1.dp)
+//        )
 
         ReceiveContentRow(
             unitTitle = receiveRateState.value.first ?: "",
@@ -106,6 +112,7 @@ fun SellContentRow(
 ) {
     Card(
         modifier = Modifier
+            .padding(vertical = 16.dp)
             .shadow(8.dp, RoundedCornerShape(6.dp)),
     ) {
         Row(
@@ -121,7 +128,8 @@ fun SellContentRow(
                 modifier = Modifier
                     .shadow(1.dp, CircleShape)
                     .background(Color.Red)
-                    .size(24.dp),
+                    .padding(2.dp)
+                    .size(24.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(text = "Sell")
@@ -183,6 +191,7 @@ fun ReceiveContentRow(
 ) {
     Card(
         modifier = Modifier
+            .padding(vertical = 16.dp)
             .shadow(8.dp, RoundedCornerShape(6.dp)),
     ) {
         Row(
@@ -196,7 +205,7 @@ fun ReceiveContentRow(
                 imageVector = Icons.Filled.ArrowDownward,
                 contentDescription = "Receive",
                 modifier = Modifier
-                    .padding(8.dp)
+                    .padding(2.dp)
                     .shadow(1.dp, CircleShape)
                     .background(Color.Green)
                     .size(24.dp),
