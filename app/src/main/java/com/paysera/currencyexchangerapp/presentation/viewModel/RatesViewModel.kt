@@ -7,9 +7,8 @@ import com.paysera.currencyexchangerapp.di.qualifier.IoDispatcher
 import com.paysera.currencyexchangerapp.domain.entity.Rates
 import com.paysera.currencyexchangerapp.domain.usecase.FetchRatesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -39,12 +38,18 @@ class RatesViewModel @Inject constructor(
 
     val commissionFee: Double = 0.07
 
+    private val job = Job()
+
     init {
         viewModelScope.launch(ioDispatcher) {
-            val response = fetchRatesUseCase.invoke()
-            if (response.isSuccess) {
-                _rates.emit(response.getOrNull())
-                currencies.value = _rates.value?.rates
+            while (job.isActive) {
+                ensureActive()
+                val response = fetchRatesUseCase.invoke()
+                if (response.isSuccess) {
+                    _rates.emit(response.getOrNull())
+                    currencies.value = _rates.value?.rates
+                }
+                delay(15000)
             }
         }
 
@@ -77,7 +82,7 @@ class RatesViewModel @Inject constructor(
     }
 
     fun submitTransaction() {
-        viewModelScope.launch {
+        viewModelScope.launch(ioDispatcher) {
             combineTransform(
                 sellSelectedRate,
                 receiveSelectedRate,
@@ -88,9 +93,8 @@ class RatesViewModel @Inject constructor(
                     sell.second.isNullOrEmpty() || receive.first.isNullOrEmpty() ||
                     receive.second.isNullOrEmpty() || sell.second.toDouble() <= 0.0
                 ) {
-                    emit(Transaction.TransactionError)
-                }
-                else {
+                    emit(Transaction.TransactionError.UnknownError)
+                } else {
                     val srcBalanceValue = _myBalances.value!![sell.first]
                     val desBalanceValue = _myBalances.value!![receive.first]
                     val srcValue: Double = sell.second.toDouble()
@@ -108,32 +112,32 @@ class RatesViewModel @Inject constructor(
                 }
             }.collectLatest { currentTransaction ->
                 when (currentTransaction) {
-                    Transaction.Destination,
+                    Transaction.TransactionError.UnknownError,
                     Transaction.Loading,
-                    Transaction.TransactionError,
                     -> {
-                        println(currentTransaction)
+                        // show error message based on their types
                     }
                     is Transaction.Success -> {
-                        println(currentTransaction.sell)
-                        println(currentTransaction.receive)
-                        println(currentTransaction.commissionFee)
-
+                        // reset values
                         sellSelectedRate.update {
                             it.copy(first = null, second = "")
                         }
                         receiveSelectedRate.update {
                             it.copy(first = null, second = "")
                         }
+                        // increment transaction count
                         transactionCount.value = transactionCount.value + 1
 
-                        _myBalances.emit(_myBalances.value?.mapValues {
-                            when (it.key) {
-                                currentTransaction.sell.first -> currentTransaction.sell.second
-                                currentTransaction.receive.first -> currentTransaction.receive.second
-                                else -> it.value
-                            }
-                        } as LinkedHashMap<String, Double>?)
+                        // update source and destination balances value
+                        _myBalances.emit(
+                            _myBalances.value?.mapValues {
+                                when (it.key) {
+                                    currentTransaction.sell.first -> currentTransaction.sell.second
+                                    currentTransaction.receive.first -> currentTransaction.receive.second
+                                    else -> it.value
+                                }
+                            } as LinkedHashMap<String, Double>?
+                        )
                     }
                 }
             }
@@ -150,33 +154,25 @@ class RatesViewModel @Inject constructor(
 
     fun setSellSelectedRate(selectedRate: String) {
         viewModelScope.launch(ioDispatcher) {
-            sellSelectedRate.update {
-                it.copy(first = selectedRate)
-            }
+            sellSelectedRate.update { it.copy(first = selectedRate) }
         }
     }
 
     fun setReceiveSelectedRate(selectedRate: String) {
         viewModelScope.launch(ioDispatcher) {
-            receiveSelectedRate.update {
-                it.copy(first = selectedRate)
-            }
+            receiveSelectedRate.update { it.copy(first = selectedRate) }
         }
     }
 
     fun setSellValue(amount: String) {
-        viewModelScope.launch {
-            sellSelectedRate.update {
-                it.copy(second = amount)
-            }
+        viewModelScope.launch(ioDispatcher) {
+            sellSelectedRate.update { it.copy(second = amount) }
         }
     }
 
     fun setReceiveValue(amount: String) {
-        viewModelScope.launch {
-            receiveSelectedRate.update {
-                it.copy(second = amount)
-            }
+        viewModelScope.launch(ioDispatcher) {
+            receiveSelectedRate.update { it.copy(second = amount) }
         }
     }
 }
@@ -189,6 +185,11 @@ sealed class Transaction {
         val commissionFee: Double,
     ) : Transaction()
 
-    object Destination : Transaction()
-    object TransactionError : Transaction()
+    sealed class TransactionError : Transaction() {
+        object UnknownError : TransactionError()
+        object SourceBalanceError : TransactionError()
+        object DestinationBalanceError : TransactionError()
+        object CommissionFeeError : TransactionError()
+        object TransferError : TransactionError()
+    }
 }
