@@ -94,11 +94,16 @@ class RatesViewModel @Inject constructor(
                     receive.second.isNullOrEmpty() || sell.second.toDouble() <= 0.0
                 ) {
                     emit(Transaction.TransactionError.UnknownError)
+                } else if (_myBalances.value!![sell.first]!! <= 0.0) {
+                    emit(Transaction.TransactionError.SourceBalanceError)
                 } else {
                     val srcBalanceValue = _myBalances.value!![sell.first]
                     val desBalanceValue = _myBalances.value!![receive.first]
                     val srcValue: Double = sell.second.toDouble()
-                    val result = srcBalanceValue!! - srcValue
+                    val result = if (transactionCount.value > 5)
+                        srcBalanceValue!! - srcValue - (((commissionFee * srcBalanceValue) * 100) / 100)
+                    else
+                        srcBalanceValue!! - srcValue
 
                     val desValue: Double =
                         receive.second.toDouble() + kotlin.math.round((desBalanceValue!! * 100) / 100)
