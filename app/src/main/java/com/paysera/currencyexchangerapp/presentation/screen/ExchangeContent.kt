@@ -60,11 +60,6 @@ fun CurrencyExchangeContentSection(viewModel: RatesViewModel) {
             }
         )
 
-//        Divider(
-//            modifier = Modifier
-//                .height(1.dp)
-//        )
-
         ReceiveContentRow(
             unitTitle = receiveRateState.value.first ?: "",
             onUnitClick = {
@@ -117,7 +112,8 @@ fun SellContentRow(
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -196,7 +192,8 @@ fun ReceiveContentRow(
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -205,10 +202,10 @@ fun ReceiveContentRow(
                 imageVector = Icons.Filled.ArrowDownward,
                 contentDescription = "Receive",
                 modifier = Modifier
-                    .padding(2.dp)
                     .shadow(1.dp, CircleShape)
                     .background(Color.Green)
-                    .size(24.dp),
+                    .padding(2.dp)
+                    .size(24.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(text = "Receive")
