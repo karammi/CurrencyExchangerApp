@@ -37,6 +37,8 @@ class RatesViewModel @Inject constructor(
     var transactionCount = mutableStateOf(0)
         private set
 
+    val commissionFee: Double = 0.07
+
     init {
         viewModelScope.launch(ioDispatcher) {
             val response = fetchRatesUseCase.invoke()
@@ -87,8 +89,8 @@ class RatesViewModel @Inject constructor(
                     receive.second.isNullOrEmpty() || sell.second.toDouble() <= 0.0
                 ) {
                     emit(Transaction.TransactionError)
-                } else {
-
+                }
+                else {
                     val srcBalanceValue = _myBalances.value!![sell.first]
                     val desBalanceValue = _myBalances.value!![receive.first]
                     val srcValue: Double = sell.second.toDouble()
@@ -125,14 +127,13 @@ class RatesViewModel @Inject constructor(
                         }
                         transactionCount.value = transactionCount.value + 1
 
-                        val temp = _myBalances.value?.mapValues {
+                        _myBalances.emit(_myBalances.value?.mapValues {
                             when (it.key) {
                                 currentTransaction.sell.first -> currentTransaction.sell.second
                                 currentTransaction.receive.first -> currentTransaction.receive.second
                                 else -> it.value
                             }
-                        }
-                        _myBalances.emit(temp as LinkedHashMap<String, Double>?)
+                        } as LinkedHashMap<String, Double>?)
                     }
                 }
             }
