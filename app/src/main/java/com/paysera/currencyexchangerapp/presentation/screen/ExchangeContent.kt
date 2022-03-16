@@ -1,11 +1,11 @@
 package com.paysera.currencyexchangerapp.presentation.screen
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -33,7 +33,20 @@ fun CurrencyExchangeContentSection(viewModel: RatesViewModel) {
     val receiveRateState = viewModel.receiveSelectedRate.collectAsState()
     val balancesState = viewModel.myBalancesSell.collectAsState()
     val rates = balancesState.value?.keys?.toList()
-    val ratesBuy = viewModel.currencies.value?.keys?.toList()
+    val ratesReceive = viewModel.currencies.value?.keys?.toList()
+
+    BackHandler {
+
+        if (viewModel.isShowReceiveSheet.value) {
+            viewModel.toggleReceiveSheet()
+            return@BackHandler
+        }
+
+        if (viewModel.isShowSellSheet.value) {
+            viewModel.toggleSellSheet()
+            return@BackHandler
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -71,10 +84,10 @@ fun CurrencyExchangeContentSection(viewModel: RatesViewModel) {
             }
         )
 
-        if (viewModel.showSellSheet.value) {
+        if (viewModel.isShowSellSheet.value) {
             RateBottomSheet(
                 initialValue = rates,
-                isVisible = viewModel.showSellSheet.value,
+                isVisible = viewModel.isShowSellSheet.value,
                 onOutsidePressed = { viewModel.toggleSellSheet() },
                 isLoading = false,
                 onItemClick = {
@@ -83,10 +96,10 @@ fun CurrencyExchangeContentSection(viewModel: RatesViewModel) {
                 }
             )
         }
-        if (viewModel.showBuySheet.value) {
+        if (viewModel.isShowReceiveSheet.value) {
             RateBottomSheet(
-                initialValue = ratesBuy,
-                isVisible = viewModel.showBuySheet.value,
+                initialValue = ratesReceive,
+                isVisible = viewModel.isShowReceiveSheet.value,
                 onOutsidePressed = { viewModel.toggleReceiveSheet() },
                 isLoading = false,
                 onItemClick = {
@@ -142,10 +155,6 @@ fun SellContentRow(
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent
                 ),
-                keyboardActions = KeyboardActions(
-                    onNext = {
-                    }
-                ),
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Done
@@ -153,7 +162,6 @@ fun SellContentRow(
                 modifier = Modifier
                     .weight(2f),
                 textStyle = TextStyle(textAlign = TextAlign.End)
-
             )
 
             Spacer(modifier = Modifier.width(8.dp))
@@ -219,10 +227,6 @@ fun ReceiveContentRow(
                     disabledIndicatorColor = Color.Transparent,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent
-                ),
-                keyboardActions = KeyboardActions(
-                    onNext = {
-                    }
                 ),
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,

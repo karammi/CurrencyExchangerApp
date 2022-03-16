@@ -28,15 +28,15 @@ class RatesViewModel @Inject constructor(
     val sellSelectedRate = MutableStateFlow(Pair<String?, String>(null, ""))
     val receiveSelectedRate = MutableStateFlow(Pair<String?, String>(null, ""))
 
-    var showSellSheet = mutableStateOf(false)
+    var isShowSellSheet = mutableStateOf(false)
         private set
-    var showBuySheet = mutableStateOf(false)
+    var isShowReceiveSheet = mutableStateOf(false)
         private set
 
     var transactionCount = mutableStateOf(0)
         private set
 
-    val commissionFee: Double = 0.07
+    private val commissionFee: Double = 0.07
 
     private val job = Job()
 
@@ -150,11 +150,11 @@ class RatesViewModel @Inject constructor(
     }
 
     fun toggleSellSheet() {
-        showSellSheet.value = !showSellSheet.value
+        isShowSellSheet.value = !isShowSellSheet.value
     }
 
     fun toggleReceiveSheet() {
-        showBuySheet.value = !showBuySheet.value
+        isShowReceiveSheet.value = !isShowReceiveSheet.value
     }
 
     fun setSellSelectedRate(selectedRate: String) {
