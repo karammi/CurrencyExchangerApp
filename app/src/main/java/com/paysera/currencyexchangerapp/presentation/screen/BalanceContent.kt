@@ -20,7 +20,6 @@ import com.paysera.currencyexchangerapp.presentation.viewModel.RatesViewModel
 @Composable
 fun MyBalanceContent(viewModel: RatesViewModel) {
     val balances by viewModel.myBalancesSell.collectAsState()
-
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
@@ -28,15 +27,14 @@ fun MyBalanceContent(viewModel: RatesViewModel) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
     ) {
-        println("COLLECTED")
-        println("%%%%%%%%%%%%%%%%%%%%%COLLECTED%%%%%%%%%%%%%%%%%%%%%%%%%%%")
-        balances?.entries?.sortedByDescending {
+        val result = balances?.entries?.sortedByDescending {
             it.value
-        }?.forEach { currentMap ->
-            item(key = currentMap.key) {
+        }
+        result?.let { listItem ->
+            items(result.size) {
                 RateItemContent(
-                    balance = currentMap.value,
-                    priceUnit = currentMap.key
+                    balance = listItem[it].value,
+                    priceUnit = listItem[it].key
                 ) { selectedBalance ->
                     if (selectedBalance.second != 0.0) {
                         viewModel.setSellSelectedRate(selectedBalance.first)

@@ -196,6 +196,7 @@ fun ReceiveContentRow(
                 imageVector = Icons.Filled.ArrowDownward,
                 contentDescription = "Receive",
                 modifier = Modifier
+                    .padding(8.dp)
                     .shadow(1.dp, CircleShape)
                     .background(Color.Green)
                     .size(24.dp),

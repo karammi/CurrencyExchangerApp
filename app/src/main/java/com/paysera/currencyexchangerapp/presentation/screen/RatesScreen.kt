@@ -25,7 +25,8 @@ fun RatesScreen(viewModel: RatesViewModel = hiltViewModel()) {
                 .fillMaxSize()
                 .padding(top = 60.dp)
         ) {
-            Text(text = "My Balance")
+            Text(text = "My Balance", modifier = Modifier.padding(horizontal = 8.dp))
+
             Spacer(modifier = Modifier.height(8.dp))
 
             MyBalanceContent(viewModel = viewModel)

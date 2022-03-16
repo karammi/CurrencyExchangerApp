@@ -63,7 +63,7 @@ class RatesViewModel @Inject constructor(
                     emit((-1).toDouble())
                 } else {
                     val rate: Double = rates.rates[buy.first]!!
-                    emit(kotlin.math.round( (sell.second.toDouble() * rate) * 100) / 100)
+                    emit(kotlin.math.round((sell.second.toDouble() * rate) * 100) / 100)
                 }
             }.filterNotNull()
                 .filter {
@@ -80,23 +80,17 @@ class RatesViewModel @Inject constructor(
                 sellSelectedRate,
                 receiveSelectedRate,
                 _rates,
-                _myBalances
-            ) { sell, receive, rates, balances ->
+            ) { sell, receive, rates ->
                 emit(Transaction.Loading)
                 if (rates == null || sell.first.isNullOrEmpty() ||
                     sell.second.isNullOrEmpty() || receive.first.isNullOrEmpty() ||
-                    receive.second.isNullOrEmpty() || sell.second.toDouble() <= 0.0 ||
-//                    || receive.second.toDouble() <= 0.0
-                    balances == null
+                    receive.second.isNullOrEmpty() || sell.second.toDouble() <= 0.0
                 ) {
                     emit(Transaction.TransactionError)
                 } else {
 
-                    val srcBalanceValue = balances[sell.first]
-                    val desBalanceValue = balances[receive.first]
-//                    if (srcBalanceValue == 0.0 && desBalanceValue!! < 0.0) {
-//                        emit(Transaction.TransactionError)
-//                    } else {
+                    val srcBalanceValue = _myBalances.value!![sell.first]
+                    val desBalanceValue = _myBalances.value!![receive.first]
                     val srcValue: Double = sell.second.toDouble()
                     val result = srcBalanceValue!! - srcValue
 
@@ -109,10 +103,8 @@ class RatesViewModel @Inject constructor(
                             0.0
                         )
                     )
-//                    }
                 }
             }.collectLatest { currentTransaction ->
-                println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
                 when (currentTransaction) {
                     Transaction.Destination,
                     Transaction.Loading,
@@ -125,34 +117,22 @@ class RatesViewModel @Inject constructor(
                         println(currentTransaction.receive)
                         println(currentTransaction.commissionFee)
 
-                        _myBalances.update {
-                            it.apply {
-                                this?.put(
-                                    currentTransaction.sell.first,
-                                    currentTransaction.sell.second
-                                )
-                                this?.set(
-                                    currentTransaction.receive.first,
-                                    currentTransaction.receive.second
-                                )
+                        sellSelectedRate.update {
+                            it.copy(first = null, second = "")
+                        }
+                        receiveSelectedRate.update {
+                            it.copy(first = null, second = "")
+                        }
+                        transactionCount.value = transactionCount.value + 1
+
+                        val temp = _myBalances.value?.mapValues {
+                            when (it.key) {
+                                currentTransaction.sell.first -> currentTransaction.sell.second
+                                currentTransaction.receive.first -> currentTransaction.receive.second
+                                else -> it.value
                             }
                         }
-                        println(_myBalances.value)
-
-                        /*  _myBalances.emit(
-                              _myBalances.value.apply {
-                                  this?.put(
-                                      currentTransaction.sell.first,
-                                      currentTransaction.sell.second
-                                  )
-                                  this?.put(
-                                      currentTransaction.receive.first,
-                                      currentTransaction.receive.second
-                                  )
-                              } as LinkedHashMap<String, Double>
-                          )*/
-//                        transactionCount.value = transactionCount.value + 1
-//                        println("transactionCount ${transactionCount.value}")
+                        _myBalances.emit(temp as LinkedHashMap<String, Double>?)
                     }
                 }
             }
