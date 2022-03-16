@@ -1,6 +1,7 @@
 package com.paysera.currencyexchangerapp.presentation.screen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CornerSize
@@ -8,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -17,7 +19,7 @@ import com.paysera.currencyexchangerapp.presentation.viewModel.RatesViewModel
 
 @Composable
 fun MyBalanceContent(viewModel: RatesViewModel) {
-    val balances = viewModel.myBalancesSell.collectAsState()
+    val balances by viewModel.myBalancesSell.collectAsState()
 
     LazyRow(
         modifier = Modifier
@@ -28,18 +30,30 @@ fun MyBalanceContent(viewModel: RatesViewModel) {
     ) {
         println("COLLECTED")
         println("%%%%%%%%%%%%%%%%%%%%%COLLECTED%%%%%%%%%%%%%%%%%%%%%%%%%%%")
-        balances.value?.entries?.sortedByDescending {
+        balances?.entries?.sortedByDescending {
             it.value
         }?.forEach { currentMap ->
             item(key = currentMap.key) {
-                RateItemContent(balance = currentMap.value, priceUnit = currentMap.key)
+                RateItemContent(
+                    balance = currentMap.value,
+                    priceUnit = currentMap.key
+                ) { selectedBalance ->
+                    if (selectedBalance.second != 0.0) {
+                        viewModel.setSellSelectedRate(selectedBalance.first)
+                        viewModel.setSellValue(selectedBalance.second.toString())
+                    }
+                }
             }
         }
     }
 }
 
 @Composable
-fun RateItemContent(balance: Double, priceUnit: String) {
+fun RateItemContent(
+    balance: Double,
+    priceUnit: String,
+    onBalanceClick: (Pair<String, Double>) -> Unit,
+) {
     Row(
         modifier = Modifier
             .padding(8.dp)
@@ -47,7 +61,10 @@ fun RateItemContent(balance: Double, priceUnit: String) {
             .height(48.dp)
             .shadow(1.dp, RoundedCornerShape(corner = CornerSize(8.dp)))
             .background(Color.LightGray)
-            .padding(horizontal = 8.dp),
+            .padding(horizontal = 8.dp)
+            .clickable {
+                onBalanceClick(priceUnit to balance)
+            },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(text = balance.toString())
