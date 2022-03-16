@@ -14,8 +14,6 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -153,7 +151,9 @@ fun SellContentRow(
                 textStyle = TextStyle(textAlign = TextAlign.End)
 
             )
+
             Spacer(modifier = Modifier.width(8.dp))
+
             Row(
                 modifier = Modifier
                     .weight(0.7f)
@@ -223,7 +223,12 @@ fun ReceiveContentRow(
                 ),
                 modifier = Modifier
                     .weight(2f),
-                textStyle = TextStyle(textAlign = TextAlign.End)
+                textStyle = TextStyle(
+                    textAlign = TextAlign.End,
+                    color = if (textInputValue.isNotEmpty() && textInputValue.toDouble() > 0.0) Color.Green else Color.Red
+                ),
+                singleLine = true,
+                readOnly = true,
             )
             Spacer(modifier = Modifier.width(8.dp))
             Row(

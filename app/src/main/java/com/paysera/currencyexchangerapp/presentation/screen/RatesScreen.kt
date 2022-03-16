@@ -16,13 +16,6 @@ import com.paysera.currencyexchangerapp.presentation.viewModel.RatesViewModel
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun RatesScreen(viewModel: RatesViewModel = hiltViewModel()) {
-
-//    val sheetState = rememberModalBottomSheetState(initialValue = ModalBottomSheetValue.Hidden)
-//    val coroutineScope = rememberCoroutineScope()
-//
-//    val balancesState = viewModel.myBalancesSell.collectAsState()
-//    val rates = balancesState.value?.keys?.toList()
-
     Scaffold(
         bottomBar = {
         }
@@ -41,46 +34,17 @@ fun RatesScreen(viewModel: RatesViewModel = hiltViewModel()) {
 
             Button(
                 onClick = {
-                    /*         viewModel.toggleSellSheet()
-                             if (sheetState.isVisible)
-                                 coroutineScope.launch {
-                                     sheetState.hide()
-                                 }
-                             else {
-                                 coroutineScope.launch {
-                                     sheetState.show()
-                                     viewModel.toggleSellSheet()
-                                 }
-                             }*/
+                    viewModel.submitTransaction()
                 },
                 modifier = Modifier
                     .padding(16.dp)
                     .fillMaxWidth()
                     .shadow(0.dp, RoundedCornerShape(10f)),
-                enabled = false
+                enabled = true
 
             ) {
                 Text(text = "Submit")
             }
         }
-
-//        if (viewModel.showSheet.value) {
-//            RateBottomSheet(
-//                initialValue = rates,
-//                isVisible = viewModel.showSheet.value,
-//                onOutsidePressed = { viewModel.toggleSheet() },
-//                isLoading = false,
-//                onItemClick = {
-//                    viewModel.setSellSelectedRate(it)
-//                }
-//            )
-        /*BottomSheetCurrencies(
-            state = sheetState,
-            myBalances = balancesState,
-            rates = rates!!,
-            onItemClick = {
-            }
-        )*/
-//        }
     }
 }
