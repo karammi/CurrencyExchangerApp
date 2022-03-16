@@ -35,13 +35,6 @@ fun BottomSheetTemplate(
 
     val density = LocalDensity.current
 
-//    AnimatedVisibility(
-//        visible = isVisible,
-//        enter = EnterTransition.None,
-//        exit = ExitTransition.None,
-//        label = "label1",
-//    ) {
-
     Box(
         contentAlignment = Alignment.BottomCenter,
         modifier = Modifier
@@ -80,11 +73,9 @@ fun BottomSheetTemplate(
                 initialScale = 0.7f,
                 animationSpec = spring(stiffness = Spring.StiffnessLow)
             ),
-//                    + fadeIn(initialAlpha = 0.5f),
             exit = slideOutVertically {
                 with(density) { height.roundToPx() }
             },
-//                        + fadeOut(targetAlpha = 0.5f),
             modifier = Modifier.zIndex(2f)
         ) {
             Surface(
@@ -103,4 +94,3 @@ fun BottomSheetTemplate(
         }
     }
 }
-// }

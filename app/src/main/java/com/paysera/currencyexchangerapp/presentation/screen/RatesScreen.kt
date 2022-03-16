@@ -7,6 +7,8 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
@@ -16,10 +18,10 @@ import com.paysera.currencyexchangerapp.presentation.viewModel.RatesViewModel
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun RatesScreen(viewModel: RatesViewModel = hiltViewModel()) {
-    Scaffold(
-        bottomBar = {
-        }
-    ) {
+
+    val receive by viewModel.receiveSelectedRate.collectAsState()
+
+    Scaffold {
         Column(
             modifier = Modifier
                 .fillMaxSize()

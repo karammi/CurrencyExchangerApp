@@ -28,15 +28,15 @@ class RatesViewModel @Inject constructor(
     val sellSelectedRate = MutableStateFlow(Pair<String?, String>(null, ""))
     val receiveSelectedRate = MutableStateFlow(Pair<String?, String>(null, ""))
 
-    var showSellSheet = mutableStateOf(false)
+    var isShowSellSheet = mutableStateOf(false)
         private set
-    var showBuySheet = mutableStateOf(false)
+    var isShowReceiveSheet = mutableStateOf(false)
         private set
 
     var transactionCount = mutableStateOf(0)
         private set
 
-    val commissionFee: Double = 0.07
+    private val commissionFee: Double = 0.07
 
     private val job = Job()
 
@@ -94,11 +94,16 @@ class RatesViewModel @Inject constructor(
                     receive.second.isNullOrEmpty() || sell.second.toDouble() <= 0.0
                 ) {
                     emit(Transaction.TransactionError.UnknownError)
+                } else if (_myBalances.value!![sell.first]!! <= 0.0) {
+                    emit(Transaction.TransactionError.SourceBalanceError)
                 } else {
                     val srcBalanceValue = _myBalances.value!![sell.first]
                     val desBalanceValue = _myBalances.value!![receive.first]
                     val srcValue: Double = sell.second.toDouble()
-                    val result = srcBalanceValue!! - srcValue
+                    val result = if (transactionCount.value > 5)
+                        srcBalanceValue!! - srcValue - (((commissionFee * srcBalanceValue) * 100) / 100)
+                    else
+                        srcBalanceValue!! - srcValue
 
                     val desValue: Double =
                         receive.second.toDouble() + kotlin.math.round((desBalanceValue!! * 100) / 100)
@@ -115,7 +120,7 @@ class RatesViewModel @Inject constructor(
                     Transaction.TransactionError.UnknownError,
                     Transaction.Loading,
                     -> {
-                        // show error message based on their types
+                        // show error message based on error type on ui screen
                     }
                     is Transaction.Success -> {
                         // reset values
@@ -145,11 +150,11 @@ class RatesViewModel @Inject constructor(
     }
 
     fun toggleSellSheet() {
-        showSellSheet.value = !showSellSheet.value
+        isShowSellSheet.value = !isShowSellSheet.value
     }
 
     fun toggleReceiveSheet() {
-        showBuySheet.value = !showBuySheet.value
+        isShowReceiveSheet.value = !isShowReceiveSheet.value
     }
 
     fun setSellSelectedRate(selectedRate: String) {
