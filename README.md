@@ -2,4 +2,4 @@
 Currency Exchanger Application
 
 
-This is a code challenge.
+This is a sample app of using compose
