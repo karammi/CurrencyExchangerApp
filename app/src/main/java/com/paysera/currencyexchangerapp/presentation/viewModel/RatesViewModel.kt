@@ -10,7 +10,6 @@ import com.paysera.currencyexchangerapp.presentation.util.Transaction
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,6 +20,16 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+sealed class UiState<out R, out E> {
+    object Loading : UiState<Nothing, Nothing>()
+    data class Success<T>(val data: T) : UiState<T, Nothing>()
+    data class Error<E>(val error: E) : UiState<Nothing, E>()
+}
+
+data class RateUiState(
+    val rate: MutableStateFlow<Rates?> = MutableStateFlow(null),
+)
 
 @HiltViewModel
 class RatesViewModel @Inject constructor(
@@ -60,7 +69,7 @@ class RatesViewModel @Inject constructor(
                     _rates.emit(response.getOrNull())
                     currencies.value = _rates.value?.rates
                 }
-                delay(15000)
+//                delay(15000)
             }
         }
 
