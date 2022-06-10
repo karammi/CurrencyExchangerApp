@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.google.accompanist.insets.imePadding
+import com.paysera.currencyexchangerapp.core.ui.theme.iWhite
 
 @ExperimentalFoundationApi
 @ExperimentalAnimationApi
@@ -44,7 +45,7 @@ fun BottomSheetTemplate(
     Box(
         contentAlignment = Alignment.BottomCenter,
         modifier = Modifier
-            .imePadding()
+            .imePadding(),
     ) {
 
         AnimatedVisibility(
@@ -89,7 +90,7 @@ fun BottomSheetTemplate(
                     .requiredHeight(height)
                     .fillMaxWidth()
                     .graphicsLayer(),
-                color = Color.White,
+                color = iWhite,
                 shape = RoundedCornerShape(
                     topStart = UiConstant.BorderRadiusMedium,
                     topEnd = UiConstant.BorderRadiusMedium,

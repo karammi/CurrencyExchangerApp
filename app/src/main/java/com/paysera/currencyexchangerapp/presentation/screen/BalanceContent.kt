@@ -2,7 +2,9 @@ package com.paysera.currencyexchangerapp.presentation.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,6 +17,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -26,8 +29,8 @@ import com.paysera.currencyexchangerapp.presentation.viewModel.RatesViewModel
 fun MyBalanceContent(viewModel: RatesViewModel) {
     val balances by viewModel.myBalancesSell.collectAsState()
     LazyRow(
+        contentPadding = PaddingValues(horizontal = 16.dp),
         modifier = Modifier
-            .padding(horizontal = 16.dp)
             .fillMaxWidth()
             .height(60.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -66,13 +69,19 @@ fun RateItemContent(
             .shadow(1.dp, RoundedCornerShape(corner = CornerSize(8.dp)))
             .background(Color.LightGray)
             .padding(horizontal = 8.dp)
-            .clickable {
-                onBalanceClick(priceUnit to balance)
-            },
+            .clickable(
+                indication = null,
+                interactionSource = remember {
+                    MutableInteractionSource()
+                },
+                onClick = {
+                    onBalanceClick(priceUnit to balance)
+                }
+            ),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text(text = balance.toString())
-        Text(text = priceUnit)
+        Text(text = balance.toString(), color = Color.Black)
+        Text(text = priceUnit, color = Color.Black)
     }
 }

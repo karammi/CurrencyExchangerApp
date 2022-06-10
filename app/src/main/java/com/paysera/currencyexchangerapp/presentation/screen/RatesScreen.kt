@@ -44,7 +44,7 @@ fun RatesScreen(viewModel: RatesViewModel = hiltViewModel()) {
                         )
                     },
                     backgroundColor = iBlue,
-                    elevation = 0.dp,
+                    elevation = 8.dp,
                     modifier = Modifier.statusBarsPadding(),
                 )
             }
@@ -53,15 +53,10 @@ fun RatesScreen(viewModel: RatesViewModel = hiltViewModel()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 60.dp)
+                .padding(top = 24.dp)
         ) {
-            Text(
-                text = "My Balances",
-                modifier = Modifier.padding(
-                    horizontal = 16.dp,
-                    vertical = 8.dp
-                )
-            )
+
+            BalanceTitle()
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -90,4 +85,16 @@ fun RatesScreen(viewModel: RatesViewModel = hiltViewModel()) {
             }
         }
     }
+}
+
+@Composable
+fun BalanceTitle() {
+    Text(
+        text = "My Balances",
+        color = iBlue,
+        modifier = Modifier.padding(
+            horizontal = 16.dp,
+            vertical = 8.dp
+        )
+    )
 }

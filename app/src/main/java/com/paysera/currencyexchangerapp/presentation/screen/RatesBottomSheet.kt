@@ -1,6 +1,7 @@
 package com.paysera.currencyexchangerapp.presentation.screen
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,8 +15,10 @@ import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.paysera.currencyexchangerapp.core.ui.theme.iBlueDark
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -54,12 +57,19 @@ fun CurrencySheetContent(rates: List<String>, onItemClick: (String) -> Unit) {
 fun CurrencySheetItem(title: String, onItemClick: (String) -> Unit) {
     Text(
         text = title,
+        color = iBlueDark,
         modifier = Modifier
             .fillMaxWidth()
             .height(40.dp)
-            .padding(8.dp)
-            .clickable {
-                onItemClick(title)
-            }
+            .padding(horizontal = 16.dp, vertical = 4.dp)
+            .clickable(
+                indication = null,
+                interactionSource = remember {
+                    MutableInteractionSource()
+                },
+                onClick = {
+                    onItemClick(title)
+                }
+            )
     )
 }
