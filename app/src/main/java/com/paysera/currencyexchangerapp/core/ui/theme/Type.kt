@@ -1,4 +1,4 @@
-package com.paysera.currencyexchangerapp.presentation.ui.theme
+package com.paysera.currencyexchangerapp.core.ui.theme
 
 import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle

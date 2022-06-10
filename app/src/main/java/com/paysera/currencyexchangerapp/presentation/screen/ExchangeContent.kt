@@ -3,11 +3,24 @@ package com.paysera.currencyexchangerapp.presentation.screen
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
+import androidx.compose.material.Card
+import androidx.compose.material.Icon
+import androidx.compose.material.Text
+import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -25,7 +38,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.paysera.currencyexchangerapp.presentation.viewModel.RatesViewModel
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CurrencyExchangeContentSection(viewModel: RatesViewModel) {
 
@@ -89,7 +101,6 @@ fun CurrencyExchangeContentSection(viewModel: RatesViewModel) {
                 initialValue = rates,
                 isVisible = viewModel.isShowSellSheet.value,
                 onOutsidePressed = { viewModel.toggleSellSheet() },
-                isLoading = false,
                 onItemClick = {
                     viewModel.setSellSelectedRate(it)
                     viewModel.toggleSellSheet()
@@ -101,7 +112,6 @@ fun CurrencyExchangeContentSection(viewModel: RatesViewModel) {
                 initialValue = ratesReceive,
                 isVisible = viewModel.isShowReceiveSheet.value,
                 onOutsidePressed = { viewModel.toggleReceiveSheet() },
-                isLoading = false,
                 onItemClick = {
                     viewModel.setReceiveSelectedRate(it)
                     viewModel.toggleReceiveSheet()

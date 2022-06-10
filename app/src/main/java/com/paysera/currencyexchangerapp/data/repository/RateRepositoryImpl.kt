@@ -7,10 +7,18 @@ import com.paysera.currencyexchangerapp.domain.repository.RateRepository
 import dagger.hilt.android.scopes.ViewModelScoped
 import javax.inject.Inject
 
+/**
+ * This implementation of class is used to provide data to upper layers,
+ * that is domain layer(optional layer)
+ * params
+ *  first params is [rateRemoteDataSource] for fetching data from server api
+ *  second params is [rateResponseMapper] for mapping server result to domain layer entities
+ * */
+
 @ViewModelScoped
 class RateRepositoryImpl @Inject constructor(
     private val rateRemoteDataSource: RateRemoteDataSource,
-    private val rateResponseMapper: RateResponseMapper
+    private val rateResponseMapper: RateResponseMapper,
 ) : RateRepository {
 
     override suspend fun fetchRates(): Result<Rates> {

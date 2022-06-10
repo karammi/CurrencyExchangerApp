@@ -1,7 +1,11 @@
 package com.paysera.currencyexchangerapp.presentation.screen
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -10,7 +14,6 @@ import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
@@ -18,7 +21,6 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun BottomSheetCurrencies(
     state: ModalBottomSheetState,
-    myBalances: State<Map<String, Double>?>,
     rates: List<String>,
     onItemClick: (String) -> Unit,
 ) {
@@ -27,11 +29,8 @@ fun BottomSheetCurrencies(
         sheetState = state,
         sheetContent = {
             Column(modifier = Modifier.fillMaxSize()) {
-                rates.let {
-                    CurrencySheetContent(rates = it) {
-                        onItemClick(it)
-//                        viewModel.setSellSelectedRate(it)
-                    }
+                CurrencySheetContent(rates = rates) {
+                    onItemClick(it)
                 }
             }
         },
