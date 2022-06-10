@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.paysera.currencyexchangerapp.di.qualifier.IoDispatcher
 import com.paysera.currencyexchangerapp.domain.entity.Rates
 import com.paysera.currencyexchangerapp.domain.usecase.FetchRatesUseCase
+import com.paysera.currencyexchangerapp.presentation.util.Transaction
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
@@ -189,22 +190,5 @@ class RatesViewModel @Inject constructor(
         viewModelScope.launch(ioDispatcher) {
             receiveSelectedRate.update { it.copy(second = amount) }
         }
-    }
-}
-
-sealed class Transaction {
-    object Loading : Transaction()
-    data class Success(
-        val sell: Pair<String, Double>,
-        val receive: Pair<String, Double>,
-        val commissionFee: Double,
-    ) : Transaction()
-
-    sealed class TransactionError : Transaction() {
-        object UnknownError : TransactionError()
-        object SourceBalanceError : TransactionError()
-        object DestinationBalanceError : TransactionError()
-        object CommissionFeeError : TransactionError()
-        object TransferError : TransactionError()
     }
 }
